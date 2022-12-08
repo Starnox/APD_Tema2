@@ -9,13 +9,6 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class Tema2 {
-    // TODO Extract the folder name from the argument
-    // TODO Extract the maximum number of threads from the argument and store it in a variable P
-    // TODO Read the two files from the folder
-    // TODO Create a parallel approach using ExecutorService with maximum P threads
-    // TODO Create Makefile
-
-
     public static String ordersTextFile;
     public static String orderProductsTextFile;
     public static ExecutorService executorService;
