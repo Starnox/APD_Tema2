@@ -32,15 +32,8 @@ public class OrderHandlerThread implements Callable<List<Future<String>>> {
             System.out.println(s);
             // Using the ExecutorService from Tema2, add to the queue a new OrderHandlerThread
             // which will receive the orderId and numberOfProducts
-
-            futures.add(Tema2.executorService.submit(new ProductHandlerThread(orderId, numberOfProducts)));
-
-            /*try {
-                Tema2.ordersFileWriter.write(s);
-                Tema2.ordersFileWriter.write(System.lineSeparator());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
+            if (numberOfProducts > 0)
+                futures.add(Tema2.executorService.submit(new ProductHandlerThread(orderId, numberOfProducts)));
         }
         return futures;
     }

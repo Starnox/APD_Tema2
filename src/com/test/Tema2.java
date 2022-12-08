@@ -59,19 +59,25 @@ public class Tema2 {
             if (i == P - 1) {
                 endLine = orders.size();
             }
+            if (startLine == endLine && startLine == orders.size())
+                break;
             OrderHandlerThread orderHandlerThread = new OrderHandlerThread(startLine, endLine);
             futures.add(executorService.submit(orderHandlerThread));
             startLine = endLine;
             endLine += linesPerThread;
         }
-
+        int i = 0;
         try {
             for (Future<List<Future<String>>> future : futures) {
                 for (Future<String> future1 : future.get()) {
                     System.out.println(future1.get());
                 }
+                // after all the products from that order are processed, write to file
+                ordersFileWriter.write(orders.get(i) + ",processed");
+                ordersFileWriter.write(System.lineSeparator());
+                i++;
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException | IOException e) {
             e.printStackTrace();
         }
 
