@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 public class ProductHandlerThread implements Callable<String> {
     private final String orderID;
     private String productID;
-    private BufferedReader orderProductsBufferedReader;
+    private final BufferedReader orderProductsBufferedReader;
 
     public ProductHandlerThread(String orderID) throws IOException {
         this.orderID = orderID;
@@ -18,7 +18,7 @@ public class ProductHandlerThread implements Callable<String> {
 
     @Override
     public String call() throws IOException {
-        int currentQuantity = 0, i = 0;
+        int i = 0;
         String line;
         while ((line = orderProductsBufferedReader.readLine()) != null) {
             // look for the orderId in the products list

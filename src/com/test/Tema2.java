@@ -1,9 +1,13 @@
 package com.test;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 
 public class Tema2 {
@@ -14,10 +18,7 @@ public class Tema2 {
     public static FileWriter ordersFileWriter;
     public static FileWriter orderProductsFileWriter;
 
-    public static Set<Integer> orderLinesProcessed = ConcurrentHashMap.newKeySet();
-    public static Set<Integer> productLinesProcessed = ConcurrentHashMap.newKeySet();
-
-
+    public static final Set<Integer> productLinesProcessed = ConcurrentHashMap.newKeySet();
 
     public static int P;
 
@@ -36,7 +37,6 @@ public class Tema2 {
         // FileWriter object in java is by default synchronized
 
         BufferedReader ordersBufferedReader = null;
-        BufferedReader orderProductsBufferedReader = null;
         try {
             ordersFileWriter = new FileWriter("orders_out.txt");
             orderProductsFileWriter = new FileWriter("order_products_out.txt");
@@ -83,7 +83,6 @@ public class Tema2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
 
     }
