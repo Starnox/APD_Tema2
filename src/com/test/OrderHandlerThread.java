@@ -47,8 +47,7 @@ public class OrderHandlerThread implements Callable<Void> {
             }
             // after all the products for the current order have been processed, write the order to the orders_out.txt file
             try {
-                Tema2.ordersFileWriter.write(Tema2.orders.get(k) + ",shipped");
-                Tema2.ordersFileWriter.write(System.lineSeparator());
+                Tema2.ordersFileWriter.write(Tema2.orders.get(k) + ",shipped" + System.lineSeparator());
             } catch (IOException e) {
                 e.printStackTrace();
             }
