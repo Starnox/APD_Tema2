@@ -4,20 +4,19 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 
 public class ProductHandlerThread implements Callable<String> {
-    private String orderID;
-    private int quantity;
+    private final String orderID;
 
-    public ProductHandlerThread(String orderID, int quantity) {
+    public ProductHandlerThread(String orderID) {
         this.orderID = orderID;
-        this.quantity = quantity;
     }
 
     @Override
-    public String call() throws Exception {
+    public String call() {
         int currentQuantity = 0, n = Tema2.products.size(), i = 0;
-        while (currentQuantity < quantity && i < n) {
+        while (i < n) {
             // look for the orderId in the products list
-            if (Tema2.products.get(i).split(",")[0].equals(orderID)) {
+            if (Tema2.products.get(i).split(",")[0].equals(orderID) && !Tema2.linesProcessed.contains(i)) {
+                Tema2.linesProcessed.add(i);
                 // if the orderId is found, write the line to the order_products_out.txt file
                 // and increment the currentQuantity
                 String s = Tema2.products.get(i);
@@ -28,10 +27,10 @@ public class ProductHandlerThread implements Callable<String> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                currentQuantity++;
+                break;
             }
             i++;
         }
-        return "Thread " + Thread.currentThread().getId() + " has processed " + orderID + " with quantity " + quantity;
+        return "Thread " + Thread.currentThread().getId() + " has processed " + orderID;
     }
 }
