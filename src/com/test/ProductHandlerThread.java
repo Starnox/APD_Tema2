@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 
 public class ProductHandlerThread implements Callable<String> {
     private final String orderID;
+    private String productID;
 
     public ProductHandlerThread(String orderID) {
         this.orderID = orderID;
@@ -17,13 +18,13 @@ public class ProductHandlerThread implements Callable<String> {
             // look for the orderId in the products list
             if (Tema2.products.get(i).split(",")[0].equals(orderID) && !Tema2.linesProcessed.contains(i)) {
                 Tema2.linesProcessed.add(i);
+                productID = Tema2.products.get(i).split(",")[1];
                 // if the orderId is found, write the line to the order_products_out.txt file
                 // and increment the currentQuantity
                 String s = Tema2.products.get(i);
                 System.out.println("Thread " + Thread.currentThread().getId() + " is processing product " + s);
                 try {
-                    Tema2.orderProductsFileWriter.write(s + ",shipped");
-                    Tema2.orderProductsFileWriter.write(System.lineSeparator());
+                    Tema2.orderProductsFileWriter.write(s + ",shipped" + System.lineSeparator());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -31,6 +32,6 @@ public class ProductHandlerThread implements Callable<String> {
             }
             i++;
         }
-        return "Thread " + Thread.currentThread().getId() + " has processed " + orderID;
+        return "Thread " + Thread.currentThread().getId() + " has processed " + productID;
     }
 }

@@ -55,7 +55,7 @@ public class Tema2 {
             if (i == P - 1) {
                 endLine = orders.size();
             }
-            if (startLine == endLine && startLine == orders.size())
+            if (startLine == orders.size())
                 break;
             OrderHandlerThread orderHandlerThread = new OrderHandlerThread(startLine, endLine);
             futures.add(executorServiceOrders.submit(orderHandlerThread));
