@@ -1,5 +1,6 @@
 package com.test;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,24 +11,27 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class OrderHandlerThread implements Callable<Void> {
-    private int startLine, endLine;
+    private final BufferedReader ordersBufferedReader;
 
-    public OrderHandlerThread(int startLine, int endLine)  {
-        this.startLine = startLine;
-        this.endLine = endLine;
+    public OrderHandlerThread(BufferedReader ordersBufferedReader)  {
+        this.ordersBufferedReader = ordersBufferedReader;
     }
 
     @Override
-    public Void call() {
+    public Void call() throws IOException {
         long id = Thread.currentThread().getId();
-        System.out.println("Thread " + id + " started" + " with startLine " + startLine + " and endLine " + endLine);
         // Print the lines from startLine to endLine
         String orderId;
         int numberOfProducts;
         List<List<Future<String>>> futures = new ArrayList<>();
-        for (int i = startLine; i < endLine; i++) {
-            orderId = Tema2.orders.get(i).split(",")[0];
-            numberOfProducts = Integer.parseInt(Tema2.orders.get(i).split(",")[1]);
+        String line;
+        List<String> lines = new ArrayList<>();
+
+        while ((line = ordersBufferedReader.readLine()) != null) {
+            System.out.println("Thread " + id + " is processing order " + line);
+            lines.add(line);
+            orderId = line.split(",")[0];
+            numberOfProducts = Integer.parseInt(line.split(",")[1]);
             List<Future<String>> currentFutures = new ArrayList<>();
 
             for (int j = 0; j < numberOfProducts; ++j) {
@@ -35,8 +39,9 @@ public class OrderHandlerThread implements Callable<Void> {
                 currentFutures.add(Tema2.executorServiceProducts.submit(productHandlerThread));
             }
             futures.add(currentFutures);
+
         }
-        int k = startLine;
+        int k = 0;
         for (List<Future<String>> currentFutures : futures) {
             for (Future<String> future : currentFutures) {
                 try {
@@ -47,13 +52,12 @@ public class OrderHandlerThread implements Callable<Void> {
             }
             // after all the products for the current order have been processed, write the order to the orders_out.txt file
             try {
-                Tema2.ordersFileWriter.write(Tema2.orders.get(k) + ",shipped" + System.lineSeparator());
+                Tema2.ordersFileWriter.write(lines.get(k) + ",shipped" + System.lineSeparator());
             } catch (IOException e) {
                 e.printStackTrace();
             }
             k++;
         }
-        // write to orders_out.txt the fact that the order has been shipped
         return null;
     }
 }

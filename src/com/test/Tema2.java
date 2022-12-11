@@ -13,10 +13,11 @@ public class Tema2 {
     public static ExecutorService executorServiceProducts;
     public static FileWriter ordersFileWriter;
     public static FileWriter orderProductsFileWriter;
-    public static List<String> orders;
-    public static List<String> products;
 
-    public static Set<Integer> linesProcessed = ConcurrentHashMap.newKeySet();
+    public static Set<Integer> orderLinesProcessed = ConcurrentHashMap.newKeySet();
+    public static Set<Integer> productLinesProcessed = ConcurrentHashMap.newKeySet();
+
+
 
     public static int P;
 
@@ -33,34 +34,22 @@ public class Tema2 {
         executorServiceOrders = Executors.newFixedThreadPool(P);
         executorServiceProducts = Executors.newFixedThreadPool(P);
         // FileWriter object in java is by default synchronized
+
+        BufferedReader ordersBufferedReader = null;
+        BufferedReader orderProductsBufferedReader = null;
         try {
             ordersFileWriter = new FileWriter("orders_out.txt");
             orderProductsFileWriter = new FileWriter("order_products_out.txt");
-            orders = Files.readAllLines(Paths.get(ordersTextFile));
-            products = Files.readAllLines(Paths.get(orderProductsTextFile));
+            ordersBufferedReader = Files.newBufferedReader(Paths.get(ordersTextFile));
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error creating output files");
         }
 
-        int linesPerThread = (int) Math.round((double) orders.size() / P);
-        if (linesPerThread == 0)
-            linesPerThread = 1;
-
-        int startLine = 0;
-        int endLine = linesPerThread;
-
         List<Future<Void>> futures = new ArrayList<>();
         for (int i = 0; i < P; i++) {
-            if (i == P - 1) {
-                endLine = orders.size();
-            }
-            if (startLine == orders.size())
-                break;
-            OrderHandlerThread orderHandlerThread = new OrderHandlerThread(startLine, endLine);
+            OrderHandlerThread orderHandlerThread = new OrderHandlerThread(ordersBufferedReader);
             futures.add(executorServiceOrders.submit(orderHandlerThread));
-            startLine = endLine;
-            endLine += linesPerThread;
         }
 
         // wait for all the threads to finish
@@ -89,9 +78,13 @@ public class Tema2 {
         try {
             ordersFileWriter.close();
             orderProductsFileWriter.close();
+            assert ordersBufferedReader != null;
+            ordersBufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
 
     }
 }
